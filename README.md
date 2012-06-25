@@ -1,4 +1,4 @@
-UniData ORM
+UniData ORM [![Build Status](https://secure.travis-ci.org/totalcareauto/unidata.png?branch=master)](http://travis-ci.org/totalcareauto/unidata)
 ===========
 
 A simple ORM for Rocket's UniData database.
