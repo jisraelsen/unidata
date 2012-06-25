@@ -1,0 +1,2 @@
+rvm --create jruby-1.6.7@unidata
+export JRUBY_OPTS=--1.9

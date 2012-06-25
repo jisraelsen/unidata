@@ -1,18 +1,11 @@
 *.gem
-*.rbc
 .bundle
-.config
-coverage
-InstalledFiles
-lib/bundler/man
-pkg
-rdoc
-spec/reports
-test/tmp
-test/version_tmp
-tmp
+.rvmrc
+Gemfile.lock
+README.html
+coverage/
+examples/
+pkg/*
 
-# YARD artifacts
-.yardoc
-_yardoc
-doc/
+# MAC OS
+.DS_Store
