@@ -67,7 +67,7 @@ describe Unidata::Model do
 
   describe '.from_unidata' do
     before(:each) do
-      @record = Java::AsjavaUniclientlibs::UniDynArray.new
+      @record = Unidata::UniDynArray.new
       @record.replace 0, 123
       @record.replace 1, 'JOHN DOE'
       @record.replace 2, 25
@@ -113,7 +113,7 @@ describe Unidata::Model do
 
   describe '.find' do
     before(:each) do
-      @record = Java::AsjavaUniclientlibs::UniDynArray.new
+      @record = Unidata::UniDynArray.new
       @record.replace 1, 'JOHN DOE'
       @record.replace 2, 25
       @record.replace 3, Date.to_unidata(Date.today)
@@ -169,7 +169,7 @@ describe Unidata::Model do
         :salary     => BigDecimal.new('60_000.00')
       )
 
-      record = Java::AsjavaUniclientlibs::UniDynArray.new
+      record = Unidata::UniDynArray.new
       record.replace 1, 'JOHN DOE'
       record.replace 2, 25
       record.replace 3, Date.to_unidata(Date.today)

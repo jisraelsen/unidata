@@ -26,7 +26,7 @@ module Unidata
       end
 
       def to_unidata(instance)
-        record = Java::AsjavaUniclientlibs::UniDynArray.new
+        record = Unidata::UniDynArray.new
 
         instance.attributes.each do |key, value|
           next if key == :id

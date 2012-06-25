@@ -1,3 +1,5 @@
+require 'time'
+
 module Unidata
   module Extensions
     module Time

@@ -1,3 +1,5 @@
+require 'bigdecimal'
+
 module Unidata
   module Extensions
     module BigDecimal

@@ -14,11 +14,13 @@ module Unidata
     end
 
     def open
-      @session = UDJrb::Session.new user, password, host, data_dir
+      @session = Unidata.unijava.open_session
+      @session.set_data_source_type "UNIDATA"
+      @session.connect(host, user, password, data_dir)
     end
 
     def close
-      @session.disconnect if @session
+      Unidata.unijava.close_session @session
       @session = nil
     end
 
@@ -29,7 +31,7 @@ module Unidata
         begin
           file.read_field(record_id, 0)
           exists = true
-        rescue Java::AsjavaUniobjects::UniFileException
+        rescue Unidata::UniFileException
         end
       end
 
@@ -41,8 +43,8 @@ module Unidata
 
       open_file(filename) do |file|
         begin
-          record = Java::AsjavaUniclientlibs::UniDynArray.new(file.read(record_id))
-        rescue Java::AsjavaUniobjects::UniFileException
+          record = Unidata::UniDynArray.new(file.read(record_id))
+        rescue Unidata::UniFileException
         end
       end
 
@@ -55,7 +57,7 @@ module Unidata
       open_file(filename) do |file|
         begin
           value = file.read_field(record_id, field).to_s
-        rescue Java::AsjavaUniobjects::UniFileException
+        rescue Unidata::UniFileException
         end
       end
 
@@ -63,7 +65,7 @@ module Unidata
     end
 
     def write(filename, record_id, record)
-      record = record.to_unidata unless record.kind_of?(Java::AsjavaUniclientlibs::UniDynArray)
+      record = record.to_unidata unless record.kind_of?(Unidata::UniDynArray)
 
       open_file(filename) do |file|
         file.write(record_id, record)
@@ -82,7 +84,7 @@ module Unidata
         begin
           file.lock_record(record_id, lock_flag)
           yield
-        rescue Java::AsjavaUniobjects::UniFileException
+        rescue Unidata::UniFileException
           # try to obtain a record lock at most 3 times, then give up
           if retry_count < 2
             sleep 5

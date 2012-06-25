@@ -3,6 +3,13 @@ require 'spec_helper'
 describe Unidata::Connection do
   let(:connection) { Unidata::Connection.new('test', 'secret', 'localhost', 'tmp') }
 
+  before(:each) do
+    @session = double('UniSession', :set_data_source_type => nil, :connect => nil)
+
+    Unidata.unijava.stub(:open_session).and_return(@session)
+    Unidata.unijava.stub(:close_session)
+  end
+
   describe '#initialize' do
     it 'captures and assigns arguments' do
       connection.user.should == 'test'
@@ -15,7 +22,8 @@ describe Unidata::Connection do
   describe '#open?' do
     context 'with existing active session' do
       it 'returns true' do
-        UDJrb::Session.stub(:new).and_return(double('UDJrb::Session', :is_active => true))
+        @session.stub(:is_active).and_return(true)
+
         connection.open
         connection.open?.should == true
       end
@@ -23,7 +31,8 @@ describe Unidata::Connection do
 
     context 'with existing inactive session' do
       it 'returns false' do
-        UDJrb::Session.stub(:new).and_return(double('UDJrb::Session', :is_active => false))
+        @session.stub(:is_active).and_return(false)
+
         connection.open
         connection.open?.should == false
       end
@@ -37,19 +46,27 @@ describe Unidata::Connection do
   end
 
   describe '#open' do
-    it 'creates a new session with config params' do
-      UDJrb::Session.should_receive(:new).with(connection.user, connection.password, connection.host, connection.data_dir)
+    it 'opens a new session' do
+      Unidata.unijava.should_receive(:open_session)
+      connection.open
+    end
+
+    it 'sets data source type to UNIDATA' do
+      @session.should_receive(:set_data_source_type).with('UNIDATA')
+      connection.open
+    end
+
+    it 'connects the session' do
+      @session.should_receive(:connect).with(connection.host, connection.user, connection.password, connection.data_dir)
       connection.open
     end
   end
 
   describe '#close' do
-    it 'disconnects the session' do
-      session = double('UDJrb::Session', :disconnect => nil)
-      UDJrb::Session.stub(:new).and_return(session)
+    it 'closes the session' do
       connection.open
 
-      session.should_receive(:disconnect)
+      Unidata.unijava.should_receive(:close_session).with(@session)
       connection.close
     end
   end
@@ -57,9 +74,8 @@ describe Unidata::Connection do
   describe '#exists?' do
     before(:each) do
       @file = double('UniFile', :close => nil, :read_field => nil)
-      @session = double('UDJrb::Session', :open => @file)
+      @session.stub(:open).and_return(@file)
 
-      UDJrb::Session.stub(:new).and_return(@session)
       connection.open
     end
 
@@ -87,7 +103,7 @@ describe Unidata::Connection do
 
     context 'when file has no given record_id' do
       it 'returns false' do
-        uni_file_exception = package_local_constructor Java::AsjavaUniobjects::UniFileException
+        uni_file_exception = package_local_constructor Unidata::UniFileException
 
         @file.stub(:read_field).and_raise(uni_file_exception)
         connection.exists?('TEST', 123).should == false
@@ -98,9 +114,8 @@ describe Unidata::Connection do
   describe '#read' do
     before(:each) do
       @file = double('UniFile', :close => nil, :read => nil)
-      @session = double('UDJrb::Session', :open => @file)
+      @session.stub(:open).and_return(@file)
 
-      UDJrb::Session.stub(:new).and_return(@session)
       connection.open
     end
 
@@ -120,15 +135,15 @@ describe Unidata::Connection do
     end
 
     context 'when record exists' do
-      it 'returns record as a Java::AsjavaUniclientlibs::UniDynArray' do
+      it 'returns record as a Unidata::UniDynArray' do
         @file.stub(:read).and_return('')
-        connection.read('TEST', 123).should be_kind_of(Java::AsjavaUniclientlibs::UniDynArray)
+        connection.read('TEST', 123).should be_kind_of(Unidata::UniDynArray)
       end
     end
 
     context 'when record does not exist' do
       it 'returns nil' do
-        uni_file_exception = package_local_constructor Java::AsjavaUniobjects::UniFileException
+        uni_file_exception = package_local_constructor Unidata::UniFileException
 
         @file.stub(:read).and_raise(uni_file_exception)
         connection.read('TEST', 123).should be_nil
@@ -139,9 +154,8 @@ describe Unidata::Connection do
   describe '#read_field' do
     before(:each) do
       @file = double('UniFile', :close => nil, :read_field => nil)
-      @session = double('UDJrb::Session', :open => @file)
+      @session.stub(:open).and_return(@file)
 
-      UDJrb::Session.stub(:new).and_return(@session)
       connection.open
     end
 
@@ -169,7 +183,7 @@ describe Unidata::Connection do
 
     context 'when field does not exist' do
       it 'returns nil' do
-        uni_file_exception = package_local_constructor Java::AsjavaUniobjects::UniFileException
+        uni_file_exception = package_local_constructor Unidata::UniFileException
 
         @file.stub(:read_field).and_raise(uni_file_exception)
         connection.read_field('TEST', 123, 5).should be_nil
@@ -180,10 +194,9 @@ describe Unidata::Connection do
   describe '#write' do
     before(:each) do
       @file = double('UniFile', :close => nil, :write => nil)
-      @session = double('UDJrb::Session', :open => @file)
-      @record = Java::AsjavaUniclientlibs::UniDynArray.new
+      @session.stub(:open).and_return(@file)
+      @record = Unidata::UniDynArray.new
 
-      UDJrb::Session.stub(:new).and_return(@session)
       connection.open
     end
 
@@ -192,9 +205,9 @@ describe Unidata::Connection do
       connection.write('TEST', 123, @record)
     end
 
-    it 'calls to_unidata on record if record not a Java::AsjavaUniclientlibs::UniDynArray' do
+    it 'calls to_unidata on record if record not a Unidata::UniDynArray' do
       record = double('Record')
-      record.should_receive(:to_unidata).and_return(Java::AsjavaUniclientlibs::UniDynArray.new)
+      record.should_receive(:to_unidata).and_return(Unidata::UniDynArray.new)
 
       connection.write('TEST', 123, record)
     end
@@ -213,9 +226,8 @@ describe Unidata::Connection do
   describe '#write_field' do
     before(:each) do
       @file = double('UniFile', :close => nil, :write_field => nil)
-      @session = double('UDJrb::Session', :open => @file)
+      @session.stub(:open).and_return(@file)
 
-      UDJrb::Session.stub(:new).and_return(@session)
       connection.open
     end
 

@@ -1,3 +1,5 @@
+require 'date'
+
 module Unidata
   module Extensions
     module Date
