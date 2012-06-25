@@ -6,7 +6,7 @@ Gem::Specification.new do |gem|
   gem.version       = Unidata::VERSION
   gem.authors       = ["Jeremy Israelsen"]
   gem.email         = ["jisraelsen@gmail.com"]
-  gem.homepage      = "http://github.com/totalcareauto/unidata"
+  gem.homepage      = "http://github.com/jisraelsen/unidata"
   gem.description   = %q{A simple ORM for Rocket's UniData database}
   gem.summary       = %q{A simple ORM for Rocket's UniData database}
 
