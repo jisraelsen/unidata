@@ -1,4 +1,4 @@
-UniData ORM [![Build Status](https://secure.travis-ci.org/totalcareauto/unidata.png?branch=master)](http://travis-ci.org/totalcareauto/unidata)
+UniData ORM [![Build Status](https://secure.travis-ci.org/jisraelsen/unidata.png?branch=master)](http://travis-ci.org/jisraelsen/unidata)
 ===========
 
 A simple ORM for Rocket's UniData database.
@@ -91,9 +91,9 @@ COVERAGE=on rake spec
 Issues
 ------
 
-Please use GitHub's [issue tracker](http://github.com/totalcareauto/unidata/issues).
+Please use GitHub's [issue tracker](http://github.com/jisraelsen/unidata/issues).
 
-Authors
--------
+Author
+------
 
 [Jeremy Israelsen](http://github.com/jisraelsen)
