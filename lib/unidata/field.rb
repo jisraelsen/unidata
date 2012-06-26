@@ -1,11 +1,20 @@
 module Unidata
   class Field
-    attr_reader :index, :name, :type, :formatter
+    attr_reader :index, :name, :type
 
-    def initialize(index, name, type=String)
+    def initialize(index, name, type=String, options={})
       @index = [*index]
       @name = name
       @type = type
+      @default = options[:default]
+    end
+
+    def default
+      if @default.respond_to?(:call)
+        @default.call
+      else
+        @default
+      end
     end
 
     def typecast(value)

@@ -20,6 +20,46 @@ describe Unidata::Field do
       field = subject.new(2, :name)
       field.type.should == String
     end
+
+    context 'when default value provided' do
+      it 'captures default value' do
+        field = subject.new(3, :status, String, :default => 'N')
+        field.default.should == 'N'
+      end
+    end
+
+    context 'when default value not provided' do
+      it 'does not set default value' do
+        field = subject.new(3, :status, String)
+        field.default.should be_nil
+      end
+    end
+  end
+
+  describe '#default' do
+    context 'when default is a proc/lambda/etc' do
+      it 'evaluates and returns result of default' do
+        field = subject.new(4, :created, Date, :default => proc { Date.today })
+        field.default.should == Date.today
+
+        field = subject.new(4, :created, Date, :default => lambda { Date.today })
+        field.default.should == Date.today
+      end
+    end
+
+    context 'when default is a not a proc/lambda/etc' do
+      it 'returns default' do
+        field = subject.new(3, :status, String, :default => 'active')
+        field.default.should == 'active'
+      end
+    end
+
+    context 'when no default defined' do
+      it 'returns nil' do
+        field = subject.new(2, :name)
+        field.default.should be_nil
+      end
+    end
   end
 
   describe '#typecast' do
