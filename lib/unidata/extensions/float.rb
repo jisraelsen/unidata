@@ -1,12 +1,16 @@
 module Unidata
   module Extensions
     module Float
+      def typecast(value)
+        value.kind_of?(::Float) ? value : value.to_f
+      end
+
       def to_unidata(value)
-        ::BigDecimal.to_unidata(value)
+        (value * 100).to_i
       end
 
       def from_unidata(value)
-        ::BigDecimal.from_unidata(value).to_f
+        typecast(value) / 100
       end
     end
   end

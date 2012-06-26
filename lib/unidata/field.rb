@@ -8,6 +8,10 @@ module Unidata
       @type = type
     end
 
+    def typecast(value)
+      type.typecast(value)
+    end
+
     def to_unidata(value)
       type.to_unidata(value)
     end

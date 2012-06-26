@@ -39,7 +39,7 @@ describe Unidata::Model do
   describe '.to_unidata' do
     before(:each) do
       @obj = Record.new(
-        :id         => 1234,
+        :id         => '1234',
         :name       => 'John Doe',
         :age        => 25,
         :birth_date => Date.today,
@@ -68,7 +68,7 @@ describe Unidata::Model do
   describe '.from_unidata' do
     before(:each) do
       @record = Unidata::UniDynArray.new
-      @record.replace 0, 123
+      @record.replace 0, '123'
       @record.replace 1, 'JOHN DOE'
       @record.replace 2, 25
       @record.replace 3, Date.to_unidata(Date.today)
@@ -96,18 +96,18 @@ describe Unidata::Model do
   describe '.exists?' do
     before(:each) do
       @connection = double('connection')
-      @connection.stub(:exists?).with('TEST', 123).and_return(true)
-      @connection.stub(:exists?).with('TEST', 234).and_return(false)
+      @connection.stub(:exists?).with('TEST', '123').and_return(true)
+      @connection.stub(:exists?).with('TEST', '234').and_return(false)
 
       Unidata.stub(:connection).and_return(@connection)
     end
 
     it 'returns true if record with id exists in file' do
-      Record.exists?(123).should == true
+      Record.exists?('123').should == true
     end
 
     it 'returns false if record with id does not exist in file' do
-      Record.exists?(234).should == false
+      Record.exists?('234').should == false
     end
   end
 
@@ -126,13 +126,13 @@ describe Unidata::Model do
     end
 
     it 'reads record from file' do
-      @connection.should_receive(:read).with('TEST', 123).and_return(@record)
-      Record.find(123)
+      @connection.should_receive(:read).with('TEST', '123').and_return(@record)
+      Record.find('123')
     end
 
     it 'returns model' do
       obj = Record.find(123)
-      obj.id.should == 123
+      obj.id.should == '123'
       obj.name.should == 'JOHN DOE'
       obj.age.should == 25
       obj.birth_date.should == Date.today
@@ -144,13 +144,25 @@ describe Unidata::Model do
 
   describe '#initialize' do
     it 'captures provied attributes' do
-      instance = Record.new(:id => 123, :name => 'John Doe')
-      instance.attributes.should == { :id => 123, :name => 'John Doe' }
+      instance = Record.new(:id => '123', :name => 'John Doe')
+      instance.id.should == '123'
+      instance.name.should == 'John Doe'
     end
 
     it 'ignores attributes that are not defined in fields' do
-      instance = Record.new(:id => 123, :name => 'John Doe', :nickname => 'J-Dog')
-      instance.attributes.should == { :id => 123, :name => 'John Doe' }
+      instance = Record.new(:id => '123', :name => 'John Doe', :nickname => 'J-Dog')
+      instance.should_not respond_to(:nickname)
+    end
+
+    it 'typecasts attributes' do
+      instance = Record.new(
+        :age => '12',
+        :birth_date => Time.parse('2012-01-01 12:00:00'),
+        :salary => '5000.00'
+      )
+      instance.age.should == 12
+      instance.birth_date.should == Date.parse('2012-01-01')
+      instance.salary.should == BigDecimal.new('5000.00')
     end
   end
 
@@ -160,7 +172,7 @@ describe Unidata::Model do
       Unidata.stub(:connection).and_return(connection)
 
       obj = Record.new(
-        :id         => 1234,
+        :id         => '1234',
         :name       => 'John Doe',
         :age        => 25,
         :birth_date => Date.today,
@@ -177,7 +189,7 @@ describe Unidata::Model do
       record.replace 4, 2, 'MANAGER'
       record.replace 4, 3, 6_000_000
 
-      connection.should_receive(:write).with('TEST', 1234, record)
+      connection.should_receive(:write).with('TEST', '1234', record)
       obj.save
     end
   end

@@ -28,10 +28,11 @@ module Unidata
       def to_unidata(instance)
         record = Unidata::UniDynArray.new
 
-        instance.attributes.each do |key, value|
+        fields.each do |key, field|
           next if key == :id
 
-          field = fields[key]
+          value = instance.send(key)
+          next if value.nil?
           record.replace *field.index, field.to_unidata(value)
         end
 
@@ -44,10 +45,8 @@ module Unidata
         fields.each do |key, field|
           next if key == :id
 
-          instance.send(
-            "#{key}=",
-            field.from_unidata(record.extract(*field.index).to_s)
-          )
+          value = record.extract(*field.index).to_s
+          instance.send("#{key}=", field.from_unidata(value))
         end
 
         instance
@@ -79,13 +78,11 @@ module Unidata
       end
     end
 
-    attr_reader :attributes
-
     def initialize(attributes={})
       @attributes = {}
       attributes.each do |key,value|
         next unless self.class.field?(key.to_sym)
-        @attributes[key.to_sym] = value
+        write_attribute(key, value)
       end
     end
 
@@ -100,7 +97,8 @@ module Unidata
     end
 
     def write_attribute(attribute_name, value)
-      @attributes[attribute_name.to_sym] = value
+      field = self.class.fields[attribute_name.to_sym]
+      @attributes[attribute_name.to_sym] = field.typecast(value)
     end
   end
 end

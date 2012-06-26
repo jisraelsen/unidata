@@ -6,6 +6,7 @@ if ENV['COVERAGE']
 end
 
 require 'rspec'
+require 'time'
 require 'unidata'
 
 def package_local_constructor klass,*values
