@@ -20,8 +20,8 @@ module Unidata
         fields.keys.include?(name.to_sym)
       end
 
-      def field(index, name, type=String)
-        fields[name.to_sym] = Field.new(index, name, type)
+      def field(index, name, type=String, options={})
+        fields[name.to_sym] = Field.new(index, name, type, options)
         define_attribute_accessor(name)
       end
 
@@ -79,8 +79,9 @@ module Unidata
     end
 
     def initialize(attributes={})
-      @attributes = {}
-      attributes.each do |key,value|
+      initialize_attributes
+
+      attributes.each do |key, value|
         next unless self.class.field?(key.to_sym)
         write_attribute(key, value)
       end
@@ -92,13 +93,23 @@ module Unidata
     end
 
     private
+    def initialize_attributes
+      @attributes = {}
+
+      self.class.fields.each do |key, field|
+        write_attribute(key, field.default)
+      end
+    end
+
     def read_attribute(attribute_name)
       @attributes[attribute_name.to_sym]
     end
 
     def write_attribute(attribute_name, value)
       field = self.class.fields[attribute_name.to_sym]
-      @attributes[attribute_name.to_sym] = field.typecast(value)
+      value = field.typecast(value) unless value.nil?
+
+      @attributes[attribute_name.to_sym] = value
     end
   end
 end

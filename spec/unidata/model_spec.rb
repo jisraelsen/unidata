@@ -12,6 +12,7 @@ describe Unidata::Model do
     field [4,1],  :employer
     field [4,2],  :job_title
     field [4,3],  :salary,      BigDecimal
+    field 5,      :status,      String,     :default => 'active'
   end
 
   describe '.connection' do
@@ -22,11 +23,17 @@ describe Unidata::Model do
   end
 
   describe '.field' do
-    it 'adds Field with given index, name, and type to fields hash' do
+    it 'adds Field with given index, name, type, and options to fields hash' do
       field = Record.fields[:age]
       field.index.should == [2]
       field.name.should == :age
       field.type.should == Integer
+
+      field = Record.fields[:status]
+      field.index.should == [5]
+      field.name.should == :status
+      field.type.should == String
+      field.default.should == 'active'
     end
 
     it 'defines attribute reader/writer for field' do
@@ -45,7 +52,8 @@ describe Unidata::Model do
         :birth_date => Date.today,
         :employer   => 'Awesome Company',
         :job_title  => 'Manager',
-        :salary     => BigDecimal.new('60_000.00')
+        :salary     => BigDecimal.new('60_000.00'),
+        :status     => 'inactive'
       )
     end
 
@@ -57,6 +65,7 @@ describe Unidata::Model do
       record.extract(4, 1).to_s.should == 'AWESOME COMPANY'
       record.extract(4, 2).to_s.should == 'MANAGER'
       record.extract(4, 3).to_s.should == '6000000'
+      record.extract(5).to_s.should == 'INACTIVE'
     end
 
     it 'skips id field' do
@@ -75,6 +84,7 @@ describe Unidata::Model do
       @record.replace 4, 1, 'AWESOME COMPANY'
       @record.replace 4, 2, 'MANAGER'
       @record.replace 4, 3, 6_000_000
+      @record.replace 5, 'INACTIVE'
     end
 
     it 'converts UniDynArray to model' do
@@ -85,6 +95,7 @@ describe Unidata::Model do
       obj.employer.should == 'AWESOME COMPANY'
       obj.job_title.should == 'MANAGER'
       obj.salary.should == BigDecimal.new('60_000.00')
+      obj.status.should == 'INACTIVE'
     end
 
     it 'skips id field' do
@@ -120,6 +131,7 @@ describe Unidata::Model do
       @record.replace 4, 1, 'AWESOME COMPANY'
       @record.replace 4, 2, 'MANAGER'
       @record.replace 4, 3, 6_000_000
+      @record.replace 5, 'INACTIVE'
 
       @connection = double('connection', :read => @record)
       Unidata.stub(:connection).and_return(@connection)
@@ -139,14 +151,21 @@ describe Unidata::Model do
       obj.employer.should == 'AWESOME COMPANY'
       obj.job_title.should == 'MANAGER'
       obj.salary.should == BigDecimal.new('60_000.00')
+      obj.status.should == 'INACTIVE'
     end
   end
 
   describe '#initialize' do
     it 'captures provied attributes' do
-      instance = Record.new(:id => '123', :name => 'John Doe')
+      instance = Record.new(:id => '123', :name => 'John Doe', :status => 'inactive')
       instance.id.should == '123'
       instance.name.should == 'John Doe'
+      instance.status.should == 'inactive'
+    end
+
+    it 'defaults attributes if field defines a default value' do
+      instance = Record.new(:id => '123', :name => 'John Doe')
+      instance.status.should == 'active'
     end
 
     it 'ignores attributes that are not defined in fields' do
@@ -178,7 +197,8 @@ describe Unidata::Model do
         :birth_date => Date.today,
         :employer   => 'Awesome Company',
         :job_title  => 'Manager',
-        :salary     => BigDecimal.new('60_000.00')
+        :salary     => BigDecimal.new('60_000.00'),
+        :status     => 'inactive'
       )
 
       record = Unidata::UniDynArray.new
@@ -188,6 +208,7 @@ describe Unidata::Model do
       record.replace 4, 1, 'AWESOME COMPANY'
       record.replace 4, 2, 'MANAGER'
       record.replace 4, 3, 6_000_000
+      record.replace 5, 'INACTIVE'
 
       connection.should_receive(:write).with('TEST', '1234', record)
       obj.save
