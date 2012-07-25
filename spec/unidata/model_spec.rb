@@ -153,6 +153,15 @@ describe Unidata::Model do
       obj.salary.should == BigDecimal.new('60_000.00')
       obj.status.should == 'INACTIVE'
     end
+
+    context 'when record does not exist' do
+      it 'returns nil' do
+        @connection.stub(:read).with('TEST', '234').and_return(nil)
+
+        obj = Record.find('234')
+        obj.should be_nil
+      end
+    end
   end
 
   describe '#initialize' do

@@ -57,11 +57,11 @@ module Unidata
       end
 
       def find(id)
-        record = connection.read(filename, id)
-
-        instance = from_unidata(record)
-        instance.id = id
-        instance
+        if record = connection.read(filename, id)
+          instance = from_unidata(record)
+          instance.id = id
+          instance
+        end
       end
 
       private
