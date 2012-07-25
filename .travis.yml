@@ -4,3 +4,5 @@ branches:
 language: ruby
 rvm:
   - jruby-19mode
+jdk:
+  - openjdk6
