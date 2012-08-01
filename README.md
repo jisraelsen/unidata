@@ -21,7 +21,32 @@ Or install it yourself as:
 Usage
 -----
 
-Model definition:
+### Connecting to Unidata:
+
+```ruby
+Unidata.prepare_connection(
+  :user     => "admin",
+  :password => "secret",
+  :host     => "localhost",
+  :data_dir => "/usr/uv/db"
+)
+
+Unidata.open_connection do
+  # interact with Unidata here
+end
+```
+
+Or, you can manually open and close the connection yourself.
+
+```ruby
+Unidata.open_connection
+
+# interact with Unidata here
+
+Unidata.close_connection
+```
+
+### Defining models:
 
 ```ruby
 class Product < Unidata::Model
@@ -34,7 +59,7 @@ class Product < Unidata::Model
 end
 ```
 
-Creating records:
+### Creating records:
 
 ```ruby
 thingamajig = Product.new(
@@ -53,13 +78,13 @@ whatsit.available = Date.today
 whatsit.save
 ```
 
-Record retrieval:
+### Retrieving records:
 
 ```ruby
 product = Product.find(12345)
 ```
 
-Checking if a record exists:
+Or, you can just check if a record exists:
 
 ```ruby
 Product.exists?(12345)
