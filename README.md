@@ -1,4 +1,4 @@
-UniData ORM [![Build Status](https://secure.travis-ci.org/jisraelsen/unidata.png?branch=master)](http://travis-ci.org/jisraelsen/unidata)
+UniData ORM [![Build Status](https://secure.travis-ci.org/jisraelsen/unidata.png?branch=master)](http://travis-ci.org/jisraelsen/unidata) [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/jisraelsen/unidata)
 ===========
 
 A simple ORM for Rocket's UniData database.
