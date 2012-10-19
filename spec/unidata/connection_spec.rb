@@ -84,12 +84,17 @@ describe Unidata::Connection do
       connection.select('NAMES-FILE', 'NAME EQ "JAMES,BILL"')
     end
 
-    it 'returns the correct select list' do
+    it 'fetchs the correct select list' do
       connection.open
       select_list = double
 
       @session.should_receive(:select_list).with(5).and_return(select_list)
-      connection.select('NAMES-FILE', 'NAME EQ "JAMES,BILL"', 5).should be(select_list)
+      connection.select('NAMES-FILE', 'NAME EQ "JAMES,BILL"', 5)
+    end
+
+    it 'returns a SelectList' do
+      connection.open
+      connection.select('NAMES-FILE', 'NAME EQ "JAMES,BILL"').should be_a(Unidata::SelectList)
     end
   end
 

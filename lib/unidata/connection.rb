@@ -28,7 +28,7 @@ module Unidata
       command = "SELECT #{filename} TO #{list_number}"
       command << " WITH #{condition}" unless condition.empty?
       @session.command(command).exec
-      @session.select_list list_number
+      SelectList.new(@session.select_list list_number)
     end
 
     def exists?(filename, record_id)
