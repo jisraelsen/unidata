@@ -71,6 +71,33 @@ describe Unidata::Connection do
     end
   end
 
+  describe '#select' do
+    before(:each) do
+      @session.stub(:command).and_return(double.as_null_object)
+      @session.stub(:select_list)
+    end
+
+    it 'executes the correct command' do
+      connection.open
+
+      @session.should_receive(:command).with('SELECT NAMES-FILE TO 0 WITH NAME EQ "JAMES,BILL"')
+      connection.select('NAMES-FILE', 'NAME EQ "JAMES,BILL"')
+    end
+
+    it 'fetchs the correct select list' do
+      connection.open
+      select_list = double
+
+      @session.should_receive(:select_list).with(5).and_return(select_list)
+      connection.select('NAMES-FILE', 'NAME EQ "JAMES,BILL"', 5)
+    end
+
+    it 'returns a SelectList' do
+      connection.open
+      connection.select('NAMES-FILE', 'NAME EQ "JAMES,BILL"').should be_a(Unidata::SelectList)
+    end
+  end
+
   describe '#exists?' do
     before(:each) do
       @file = double('UniFile', :close => nil, :read_field => nil)
