@@ -1,15 +1,5 @@
 require 'spec_helper'
 
-class StubUniSelectList
-  def initialize(items)
-    @items = items.map{|item| item.to_s}
-  end
-
-  def next
-    @items.shift || ""
-  end
-end
-
 describe Unidata::SelectList do
   def create_list(items, should_cache=false)
     list = StubUniSelectList.new(items)
