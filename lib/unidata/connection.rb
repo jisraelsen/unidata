@@ -24,6 +24,13 @@ module Unidata
       @session = nil
     end
 
+    def select(filename, condition="", list_number=0)
+      command = "SELECT #{filename} TO #{list_number}"
+      command << " WITH #{condition}" unless condition.empty?
+      @session.command(command).exec
+      SelectList.new(@session.select_list list_number)
+    end
+
     def exists?(filename, record_id)
       exists = false
 

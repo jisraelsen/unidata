@@ -41,6 +41,11 @@ describe Unidata::Model do
       obj.age = 25
       obj.age.should == 25
     end
+
+    it 'defines attribute finder for field' do
+      Record.should respond_to(:find_by_name)
+      Record.should respond_to(:find_by_status)
+    end
   end
 
   describe '.to_unidata' do
@@ -161,6 +166,67 @@ describe Unidata::Model do
         obj = Record.find('234')
         obj.should be_nil
       end
+    end
+  end
+
+  describe '.find_by' do
+    before(:each) do
+      @connection = double
+      Unidata.stub(:connection).and_return(@connection)
+
+      records = {}
+
+      records['123'] = Unidata::UniDynArray.new
+      records['123'].replace 1, 'JOHN DOE'
+      records['123'].replace 2, 25
+      records['123'].replace 3, Date.to_unidata(Date.today)
+      records['123'].replace 4, 1, 'AWESOME COMPANY'
+      records['123'].replace 4, 2, 'MANAGER'
+      records['123'].replace 4, 3, 6_000_000
+      records['123'].replace 5, 'INACTIVE'
+
+      records['234'] = Unidata::UniDynArray.new
+      records['234'].replace 1, 'BILL JAMES'
+      records['234'].replace 2, 20
+      records['234'].replace 3, Date.to_unidata(Date.today)
+      records['234'].replace 4, 1, 'AWESOME COMPANY'
+      records['234'].replace 4, 2, 'SALES'
+      records['234'].replace 4, 3, 3_000_000
+      records['234'].replace 5, 'INACTIVE'
+
+      @connection.stub(:read).and_return{|file, id| records[id]}
+
+      select_list = Unidata::SelectList.new StubUniSelectList.new(['123', '234'])
+      @connection.stub(:select).and_return(select_list)
+    end
+
+    it 'should return the models found by attribute' do
+      records = Record.find_by_status('INACTIVE')
+
+      records[0].id.should == '123'
+      records[0].name.should == 'JOHN DOE'
+      records[0].age.should == 25
+      records[0].birth_date.should == Date.today
+      records[0].employer.should == 'AWESOME COMPANY'
+      records[0].job_title.should == 'MANAGER'
+      records[0].salary.should == BigDecimal.new('60_000.00')
+      records[0].status.should == 'INACTIVE'
+
+      records[1].id.should == '234'
+      records[1].name.should == 'BILL JAMES'
+      records[1].age.should == 20
+      records[1].birth_date.should == Date.today
+      records[1].employer.should == 'AWESOME COMPANY'
+      records[1].job_title.should == 'SALES'
+      records[1].salary.should == BigDecimal.new('30_000.00')
+      records[1].status.should == 'INACTIVE'
+    end
+
+    it 'should return an empty array if none are found' do
+      select_list = Unidata::SelectList.new StubUniSelectList.new([])
+      @connection.stub(:select).and_return(select_list)
+
+      Record.find_by_status('ACTIVE').should == []
     end
   end
 

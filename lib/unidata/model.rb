@@ -23,6 +23,7 @@ module Unidata
       def field(index, name, type=String, options={})
         fields[name.to_sym] = Field.new(index, name, type, options)
         define_attribute_accessor(name)
+        define_attribute_finder(name)
       end
 
       def to_unidata(instance)
@@ -64,6 +65,13 @@ module Unidata
         end
       end
 
+      def find_by(name, value)
+        field_number = "F#{fields[name.to_sym].index.first}"
+        connection.select(filename, "#{field_number} EQ \"#{value}\"").map do |id|
+          find(id)
+        end
+      end
+
       private
       def define_attribute_accessor(attribute_name)
         class_eval <<-end_eval
@@ -73,6 +81,14 @@ module Unidata
 
           def #{attribute_name}=(value)
             write_attribute(:#{attribute_name}, value)
+          end
+        end_eval
+      end
+
+      def define_attribute_finder(attribute_name)
+        instance_eval <<-end_eval
+          def find_by_#{attribute_name}(value)
+            find_by(:#{attribute_name}, value)
           end
         end_eval
       end

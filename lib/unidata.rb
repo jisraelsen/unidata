@@ -1,6 +1,7 @@
 require 'java'
 require 'unidata/asjava.jar'
 require 'unidata/extensions'
+require 'unidata/select_list'
 require 'unidata/connection'
 require 'unidata/field'
 require 'unidata/model'

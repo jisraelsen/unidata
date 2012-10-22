@@ -22,5 +22,15 @@ def package_local_constructor klass,*values
   raise TypeError,"found no matching constructor for " + klass.to_s + "(" + value.class + ")"
 end
 
+class StubUniSelectList
+  def initialize(items)
+    @items = items.map{|item| item.to_s}
+  end
+
+  def next
+    @items.shift || ""
+  end
+end
+
 RSpec.configure do |config|
 end
