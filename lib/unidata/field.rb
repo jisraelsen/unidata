@@ -7,6 +7,8 @@ module Unidata
       @name = name
       @type = type
       @default = options[:default]
+
+      raise ArgumentError, 'index must be 1-3 levels' if @index.size > 3
     end
 
     def default

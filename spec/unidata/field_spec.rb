@@ -11,9 +11,14 @@ describe Unidata::Field do
       field.type.should == Date
     end
 
-    it 'accepts multivalued indexes' do
+    it 'accepts multivalued indexes with 1-3 levels' do
       field = subject.new([1,2], :name)
       field.index.should == [1,2]
+
+      field = subject.new([1,2,3], :age)
+      field.index.should == [1,2,3]
+
+      expect { subject.new([1,2,3,4], :invalid) }.to raise_error(ArgumentError, 'index must be 1-3 levels')
     end
 
     it 'defaults type to String' do
