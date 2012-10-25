@@ -34,7 +34,17 @@ module Unidata
 
           value = instance.send(key)
           next if value.nil?
-          record.replace *field.index, field.to_unidata(value)
+
+          a_field, a_value, a_subvalue = field.index
+          a_string = field.to_unidata(value)
+
+          if a_subvalue
+            record.replace a_field, a_value, a_subvalue, a_string
+          elsif a_value
+            record.replace a_field, a_value, a_string
+          else
+            record.replace a_field, a_string
+          end
         end
 
         record
