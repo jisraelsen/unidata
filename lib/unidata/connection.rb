@@ -107,6 +107,12 @@ module Unidata
       end
     end
 
+    def delete_record(filename, record_id)
+      open_file(filename) do |file|
+        file.delete_record(record_id)
+      end
+    end
+
     private
     def open_file(filename)
       begin

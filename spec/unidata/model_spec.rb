@@ -230,6 +230,16 @@ describe Unidata::Model do
     end
   end
 
+  describe '.delete' do
+    it 'deletes record from file' do
+      connection = double('connection', :delete_record => nil)
+      Unidata.stub(:connection).and_return(connection)
+
+      connection.should_receive(:delete_record).with('TEST', '1234')
+      Record.delete('1234')
+    end
+  end
+
   describe '#initialize' do
     it 'captures provied attributes' do
       instance = Record.new(:id => '123', :name => 'John Doe', :status => 'inactive')
@@ -287,6 +297,27 @@ describe Unidata::Model do
 
       connection.should_receive(:write).with('TEST', '1234', record)
       obj.save
+    end
+  end
+
+  describe '#destroy' do
+    it 'deletes record from file' do
+      connection = double('connection', :delete_record => nil)
+      Unidata.stub(:connection).and_return(connection)
+
+      obj = Record.new(
+        :id         => '1234',
+        :name       => 'John Doe',
+        :age        => 25,
+        :birth_date => Date.today,
+        :employer   => 'Awesome Company',
+        :job_title  => 'Manager',
+        :salary     => BigDecimal.new('60_000.00'),
+        :status     => 'inactive'
+      )
+
+      connection.should_receive(:delete_record).with('TEST', '1234')
+      obj.destroy
     end
   end
 end

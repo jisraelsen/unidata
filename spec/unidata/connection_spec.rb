@@ -273,4 +273,28 @@ describe Unidata::Connection do
       connection.write_field('TEST', 123, 'value', 5)
     end
   end
+
+  describe '#delete_record' do
+    before(:each) do
+      @file = double('UniFile', :close => nil, :delete_record => nil)
+      @session.stub(:open).and_return(@file)
+
+      connection.open
+    end
+
+    it 'opens file with filename' do
+      @session.should_receive(:open).with('TEST')
+      connection.delete_record('TEST', 123)
+    end
+
+    it 'deletes record from file' do
+      @file.should_receive(:delete_record).with(123)
+      connection.delete_record('TEST', 123)
+    end
+
+    it 'closes file' do
+      @file.should_receive(:close)
+      connection.delete_record('TEST', 123)
+    end
+  end
 end

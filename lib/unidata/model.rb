@@ -82,6 +82,10 @@ module Unidata
         end
       end
 
+      def delete(id)
+        connection.delete_record(filename, id)
+      end
+
       private
       def define_attribute_accessor(attribute_name)
         class_eval <<-end_eval
@@ -116,6 +120,10 @@ module Unidata
     def save
       record = self.class.to_unidata(self)
       self.class.connection.write(self.class.filename, id, record)
+    end
+
+    def destroy
+      self.class.connection.delete_record(self.class.filename, id)
     end
 
     private
