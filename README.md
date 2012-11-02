@@ -90,6 +90,19 @@ Or, you can just check if a record exists:
 Product.exists?(12345)
 ```
 
+### Deleting records:
+
+```ruby
+product = Product.find(12345)
+product.destroy
+```
+
+Or, you can delete without retrieving first:
+
+```ruby
+Product.delete(12345)
+```
+
 Contributing
 ------------
 
