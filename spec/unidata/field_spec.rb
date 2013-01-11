@@ -181,7 +181,7 @@ describe Unidata::Field do
     context 'when type is Date' do
       it 'converts value to pick time' do
         field = subject.new(1, :created_on, Date)
-        field.to_unidata(Date.parse('2012-04-03')).should == 16164
+        field.to_unidata(Date.parse('2012-04-03')).should == 16165
       end
     end
 
@@ -218,7 +218,7 @@ describe Unidata::Field do
     context 'when type is Date' do
       it 'converts value from pick time' do
         field = subject.new(1, :created_on, Date)
-        field.from_unidata(16164).should == Date.parse('2012-04-03')
+        field.from_unidata(16165).should == Date.parse('2012-04-03')
       end
     end
 
