@@ -119,7 +119,7 @@ module Unidata
         file = @session.open filename
         yield file
       ensure
-        file.close
+        file.close unless file.nil?
       end
     end
   end
