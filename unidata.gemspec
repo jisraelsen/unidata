@@ -14,6 +14,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = `git ls-files -- spec/*`.split("\n")
   gem.require_path  = 'lib'
 
+  gem.add_development_dependency 'jruby-openssl'
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec',     '~> 2.10'
   gem.add_development_dependency 'simplecov', '~> 0.6'
