@@ -1,6 +1,8 @@
 require 'simplecov'
 require 'coveralls'
 
+MultiJson.engine = :json_pure
+
 SimpleCov.formatter = Coveralls::SimpleCov::Formatter
 SimpleCov.start do
   add_filter '/spec/'
@@ -10,13 +12,15 @@ require 'rspec'
 require 'time'
 require 'unidata'
 
-def package_local_constructor klass,*values
+def package_local_constructor klass, *values
   constructors = klass.java_class.declared_constructors
   constructors.each do |c|
     c.accessible = true
     begin
       return c.new_instance(*values).to_java
     rescue TypeError
+      false
+    rescue ArgumentError
       false
     end
   end

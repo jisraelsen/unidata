@@ -140,7 +140,7 @@ describe Unidata::Connection do
 
   describe '#read' do
     before(:each) do
-      @file = double('UniFile', :close => nil, :read => nil)
+      @file = double('UniFile', :close => nil, :read => '')
       @session.stub(:open).and_return(@file)
 
       connection.open

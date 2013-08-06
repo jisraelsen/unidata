@@ -32,43 +32,33 @@ module Unidata
     end
 
     def exists?(filename, record_id)
-      exists = false
-
       open_file(filename) do |file|
         begin
-          file.read_field(record_id, 0)
-          exists = true
+          !!file.read_field(record_id, 0)
         rescue Unidata::UniFileException
+          false
         end
       end
-
-      exists
     end
 
     def read(filename, record_id)
-      record = nil
-
       open_file(filename) do |file|
         begin
-          record = Unidata::UniDynArray.new(file.read(record_id))
+          Unidata::UniDynArray.new(file.read(record_id))
         rescue Unidata::UniFileException
+          nil
         end
       end
-
-      record
     end
 
     def read_field(filename, record_id, field)
-      value = nil
-
       open_file(filename) do |file|
         begin
-          value = file.read_field(record_id, field).to_s
+          file.read_field(record_id, field).to_s
         rescue Unidata::UniFileException
+          nil
         end
       end
-
-      value
     end
 
     def write(filename, record_id, record)
