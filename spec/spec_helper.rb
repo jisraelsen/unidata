@@ -1,6 +1,8 @@
 require 'simplecov'
 require 'coveralls'
 
+MultiJson.engine = :json_pure
+
 SimpleCov.formatter = Coveralls::SimpleCov::Formatter
 SimpleCov.start do
   add_filter '/spec/'
