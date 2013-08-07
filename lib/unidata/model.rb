@@ -3,17 +3,20 @@ module Unidata
     class << self
       attr_accessor :filename
 
+      def inherited(subclass)
+        subclass.instance_variable_set(:@fields, {})
+      end
+
       def connection
         Unidata.connection
       end
 
       def fields
-        unless @fields
-          @fields = {}
-          field(0, :id)
+        if self < Unidata::Model
+          superclass.fields.merge @fields
+        else
+          @fields
         end
-
-        @fields
       end
 
       def field?(name)
@@ -21,7 +24,7 @@ module Unidata
       end
 
       def field(index, name, type=String, options={})
-        fields[name.to_sym] = Field.new(index, name, type, options)
+        @fields[name.to_sym] = Field.new(index, name, type, options)
         define_attribute_accessor(name)
         define_attribute_finder(name)
       end
@@ -107,6 +110,9 @@ module Unidata
         end_eval
       end
     end
+
+    @fields = {}
+    field 0, :id
 
     def initialize(attributes={})
       initialize_attributes

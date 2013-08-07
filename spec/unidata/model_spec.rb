@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'set'
 
 describe Unidata::Model do
   subject { Unidata::Model }
@@ -13,6 +14,32 @@ describe Unidata::Model do
     field [4,2],  :job_title
     field [4,3],  :salary,      BigDecimal
     field 5,      :status,      String,     :default => 'active'
+  end
+
+  class SubclassRecord < Record
+    self.filename = 'TESTTEMP'
+
+    field 6,      :another_field
+  end
+
+  def create_field(index, name, type=String, options={})
+    Unidata::Field.new(index, name, type, options)
+  end
+
+  describe 'subclasses' do
+    it "should have the fields of it\'s superclass and it's own fields" do
+      SubclassRecord.fields.keys.to_set.should == [
+        :id,
+        :name,
+        :age,
+        :birth_date,
+        :employer,
+        :job_title,
+        :salary,
+        :status,
+        :another_field,
+      ].to_set
+    end
   end
 
   describe '.connection' do
