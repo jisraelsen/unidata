@@ -10,11 +10,19 @@ module Unidata
       end
 
       def to_unidata(value)
-        (value - PICK_DAY_ZERO).to_i
+        if value == nil
+          ''
+        else
+          (value - PICK_DAY_ZERO).to_i
+        end
       end
 
       def from_unidata(value)
-        PICK_DAY_ZERO + value.to_i
+        if value == ''
+          nil
+        else
+          PICK_DAY_ZERO + value.to_i
+        end
       end
     end
   end
