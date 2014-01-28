@@ -1,6 +1,7 @@
 branches:
   only:
     - master
+    - develop
 language: ruby
 rvm:
   - jruby-19mode
