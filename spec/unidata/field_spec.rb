@@ -179,9 +179,14 @@ describe Unidata::Field do
 
   describe '#to_unidata' do
     context 'when type is Date' do
+      let(:field) { subject.new(1, :created_on, Date) }
+
       it 'converts value to pick time' do
-        field = subject.new(1, :created_on, Date)
         field.to_unidata(Date.parse('2012-04-03')).should == 16165
+      end
+
+      it 'converts nil to ""' do
+        field.to_unidata(nil).should == ''
       end
     end
 
@@ -216,9 +221,15 @@ describe Unidata::Field do
 
   describe '#from_unidata' do
     context 'when type is Date' do
+      let(:field) { subject.new(1, :created_on, Date) }
+
       it 'converts value from pick time' do
-        field = subject.new(1, :created_on, Date)
-        field.from_unidata(16165).should == Date.parse('2012-04-03')
+        field.from_unidata('16165').should == Date.parse('2012-04-03')
+      end
+
+      it 'converts empty string to nil' do
+        field.from_unidata('').should be_nil
+
       end
     end
 
@@ -232,14 +243,14 @@ describe Unidata::Field do
     context 'when type is Float' do
       it 'converts value to Float and divides by 100' do
         field = subject.new(1, :price, Float)
-        field.from_unidata(12332).should == 123.32
+        field.from_unidata('12332').should == 123.32
       end
     end
 
     context 'when type is BigDecimal' do
       it 'converts value to BigDecimal and divides by 100' do
         field = subject.new(1, :price, BigDecimal)
-        field.from_unidata(12332).should == BigDecimal.new('123.32')
+        field.from_unidata('12332').should == BigDecimal.new('123.32')
       end
     end
 
